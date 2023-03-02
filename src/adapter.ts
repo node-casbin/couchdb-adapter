@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Helper, Model, FilteredAdapter } from "casbin";
+let Nano = require("nano");
 
 export interface Filters {
   [ptype: string]: string[];
@@ -37,8 +38,7 @@ export class CouchdbAdapter implements FilteredAdapter {
   private databaseName: string = "casbin";
 
   constructor(databaseUrl: string) {
-    let nano = require("nano")(databaseUrl);
-    this.couchdbInstance = nano.use(this.databaseName);
+    this.couchdbInstance = Nano(databaseUrl).use(this.databaseName);
   }
 
   public static async newAdapter(databaseUrl: string) {
