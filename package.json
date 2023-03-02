@@ -1,0 +1,30 @@
+{
+  "name": "couchdb-adapter",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/node-casbin/couchdb-adapter.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/node-casbin/couchdb-adapter/issues"
+  },
+  "homepage": "https://github.com/node-casbin/couchdb-adapter#readme",
+  "dependencies": {
+    "casbin": "^5.24.1",
+    "nano": "^10.1.2",
+    "node-couchdb": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.0"
+  }
+}
