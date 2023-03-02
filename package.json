@@ -1,6 +1,6 @@
 {
   "name": "couchdb-adapter",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/terry-xuan-gao/couchdb-adapter.git"
+    "url": "git+https://github.com/node-casbin/couchdb-adapter.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/terry-xuan-gao/couchdb-adapter/issues"
+    "url": "https://github.com/node-casbin/couchdb-adapter/issues"
   },
-  "homepage": "https://github.com/terry-xuan-gao/couchdb-adapter#readme",
+  "homepage": "https://github.com/node-casbin/couchdb-adapter#readme",
   "dependencies": {
     "casbin": "^5.24.1",
     "nano": "^10.1.2",
