@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Helper, Model, FilteredAdapter } from "casbin";
-let Nano = require("nano");
+import Nano from "nano";
 
 export interface Filters {
   [ptype: string]: string[];
@@ -32,13 +32,14 @@ class Line {
 export class CouchdbAdapter implements FilteredAdapter {
   private couchdbInstance: any;
 
-  private policies: Line[];
+  private policies: Line[] = [];
   private filtered = false;
 
   private databaseName: string = "casbin";
 
   constructor(databaseUrl: string) {
-    this.couchdbInstance = Nano(databaseUrl).use(this.databaseName);
+    const nano = Nano(databaseUrl);
+    this.couchdbInstance = nano.db.use(this.databaseName);
   }
 
   public static async newAdapter(databaseUrl: string) {
@@ -90,13 +91,17 @@ export class CouchdbAdapter implements FilteredAdapter {
     return new Promise((resolve, reject) => {
       this.couchdbInstance
         .get("policies", { _rev: true })
-        .then((res) => {
-          this.couchdbInstance.destroy("policies", res["_rev"]).then((res) => {
-            this.couchdbInstance.insert({ value: policies }, "policies");
-          });
+        .then((res: any) => {
+          this.couchdbInstance
+            .destroy("policies", res["_rev"])
+            .then((res: any) => {
+              this.couchdbInstance.insert({ value: policies }, "policies");
+            });
+          resolve();
         })
-        .catch((err) => {
+        .catch((err: any) => {
           console.log(err);
+          reject();
         });
     });
   }
@@ -108,7 +113,7 @@ export class CouchdbAdapter implements FilteredAdapter {
     return await new Promise((resolve, reject) => {
       this.couchdbInstance
         .get("policies")
-        .then((res) => {
+        .then((res: { [x: string]: any }) => {
           const parsedPolicies = res["value"];
           const filteredPolicies = parsedPolicies.filter((policy: Line) => {
             if (!(policy.ptype in policyFilter)) {
@@ -141,17 +146,17 @@ export class CouchdbAdapter implements FilteredAdapter {
           });
           resolve();
         })
-        .catch((err) => {
+        .catch((err: any) => {
           reject(err);
         });
     });
   }
 
   public async loadPolicy(model: Model): Promise<void> {
-    return await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       this.couchdbInstance
         .get("policies")
-        .then((res) => {
+        .then((res: { [x: string]: any }) => {
           const parsedPolicies = res["value"];
           this.policies = parsedPolicies;
           parsedPolicies.forEach((policy: any) => {
@@ -159,7 +164,8 @@ export class CouchdbAdapter implements FilteredAdapter {
           });
           resolve();
         })
-        .catch((err) => {
+        .catch((err: any) => {
+          console.log(err)
           reject(err);
         });
     });
@@ -182,13 +188,15 @@ export class CouchdbAdapter implements FilteredAdapter {
     return new Promise((resolve, reject) => {
       this.couchdbInstance
         .get("policies", { _rev: true })
-        .then((res) => {
-          this.couchdbInstance.destroy("policies", res["_rev"]).then((res) => {
-            this.couchdbInstance.insert({ value: policies }, "policies");
-          });
+        .then((res: { [x: string]: any }) => {
+          this.couchdbInstance
+            .destroy("policies", res["_rev"])
+            .then((res: any) => {
+              this.couchdbInstance.insert({ value: policies }, "policies");
+            });
           resolve(true);
         })
-        .catch((err) => {
+        .catch((err: any) => {
           reject(err);
         });
     });
