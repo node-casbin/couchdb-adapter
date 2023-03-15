@@ -89,20 +89,50 @@ export class CouchdbAdapter implements FilteredAdapter {
 
   storePolicies(policies: Line[]): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.couchdbInstance
-        .get("policies", { _rev: true })
-        .then((res: any) => {
-          this.couchdbInstance
-            .destroy("policies", res["_rev"])
-            .then((res: any) => {
-              this.couchdbInstance.insert({ value: policies }, "policies");
-            });
-          resolve();
-        })
-        .catch((err: any) => {
+      this.couchdbInstance.get("policies", (err: any, doc: any) => {
+        if (err) {
           console.log(err);
           reject();
-        });
+        } else {
+          doc.value = policies;
+          this.couchdbInstance.insert(doc, (err: any, res: any) => {
+            if (err) {
+              if (err.statusCode === 409) {
+                // conflict occurred
+                // refetch the document and try again
+                this.couchdbInstance.get("policies", (err2: any, doc2: any) => {
+                  if (err2) {
+                    // handle error
+                    console.log(err2);
+                    reject();
+                  } else {
+                    // update document with new revision
+                    doc2.value = policies;
+                    this.couchdbInstance.insert(
+                      doc2,
+                      (err3: any, res3: any) => {
+                        if (err3) {
+                          // handle error
+                          console.log(err3);
+                          reject();
+                        } else {
+                          // handle success
+                          resolve();
+                        }
+                      }
+                    );
+                  }
+                });
+              } else {
+                console.log(err);
+                reject();
+              }
+            } else {
+              resolve();
+            }
+          });
+        }
+      });
     });
   }
 
@@ -111,11 +141,13 @@ export class CouchdbAdapter implements FilteredAdapter {
     policyFilter: Filters
   ): Promise<void> {
     return await new Promise((resolve, reject) => {
-      this.couchdbInstance
-        .get("policies")
-        .then((res: { [x: string]: any }) => {
-          const parsedPolicies = res["value"];
-          const filteredPolicies = parsedPolicies.filter((policy: Line) => {
+      this.couchdbInstance.get("policies", (err: any, doc: any) => {
+        if (err) {
+          console.log(err);
+          reject();
+        } else {
+          const parsedPolicies = doc.value;
+          let filteredPolicies = parsedPolicies.filter((policy: Line) => {
             if (!(policy.ptype in policyFilter)) {
               return false;
             }
@@ -145,10 +177,8 @@ export class CouchdbAdapter implements FilteredAdapter {
             this.loadPolicyLine(policy, model);
           });
           resolve();
-        })
-        .catch((err: any) => {
-          reject(err);
-        });
+        }
+      });
     });
   }
 
@@ -165,7 +195,7 @@ export class CouchdbAdapter implements FilteredAdapter {
           resolve();
         })
         .catch((err: any) => {
-          console.log(err)
+          console.log(err);
           reject(err);
         });
     });
@@ -186,19 +216,50 @@ export class CouchdbAdapter implements FilteredAdapter {
     }
 
     return new Promise((resolve, reject) => {
-      this.couchdbInstance
-        .get("policies", { _rev: true })
-        .then((res: { [x: string]: any }) => {
-          this.couchdbInstance
-            .destroy("policies", res["_rev"])
-            .then((res: any) => {
-              this.couchdbInstance.insert({ value: policies }, "policies");
-            });
-          resolve(true);
-        })
-        .catch((err: any) => {
-          reject(err);
-        });
+      this.couchdbInstance.get("policies", (err: any, doc: any) => {
+        if (err) {
+          console.log(err);
+          reject();
+        } else {
+          doc.value = policies;
+          this.couchdbInstance.insert(doc, (err: any, res: any) => {
+            if (err) {
+              if (err.statusCode === 409) {
+                // conflict occurred
+                // refetch the document and try again
+                this.couchdbInstance.get("policies", (err2: any, doc2: any) => {
+                  if (err2) {
+                    // handle error
+                    console.log(err2);
+                    reject();
+                  } else {
+                    // update document with new revision
+                    doc2.value = policies;
+                    this.couchdbInstance.insert(
+                      doc2,
+                      (err3: any, res3: any) => {
+                        if (err3) {
+                          // handle error
+                          console.log(err3);
+                          reject();
+                        } else {
+                          // handle success
+                          resolve(true);
+                        }
+                      }
+                    );
+                  }
+                });
+              } else {
+                console.log(err);
+                reject();
+              }
+            } else {
+              resolve(true);
+            }
+          });
+        }
+      });
     });
   }
 
@@ -273,13 +334,5 @@ export class CouchdbAdapter implements FilteredAdapter {
     });
     this.policies = filteredPolicies;
     return await this.storePolicies(filteredPolicies);
-  }
-
-  public async close(): Promise<void> {
-    return new Promise((resolve) => {
-      this.couchdbInstance.close(() => {
-        resolve();
-      });
-    });
   }
 }

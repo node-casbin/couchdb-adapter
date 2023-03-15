@@ -18,7 +18,7 @@ test(
   "test Adapter",
   async () => {
     const couchdbAdapter = await CouchdbAdapter.newAdapter(
-      "http://admin:139469@localhost:5984"
+      "http://admin:123456@localhost:5984"
     );
     let e = new Enforcer();
 
@@ -87,8 +87,6 @@ test(
       ["alice", "data1", "read"],
       ["bob", "data2", "write"],
     ]);
-
-    await couchdbAdapter.close();
   },
   30 * 1000
 );
