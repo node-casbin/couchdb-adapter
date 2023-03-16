@@ -24,8 +24,7 @@
   "homepage": "https://github.com/node-casbin/couchdb-adapter#readme",
   "dependencies": {
     "casbin": "^5.24.1",
-    "nano": "^10.1.2",
-    "node-couchdb": "^2.0.0"
+    "nano": "^10.1.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",
