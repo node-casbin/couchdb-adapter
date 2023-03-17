@@ -14,10 +14,6 @@ async function testGetFilteredPolicy(e: Enforcer, res: string[]) {
   expect(Util.arrayEquals(res, myRes)).toBe(true);
 }
 
-// test('hello test', () => {
-//   expect(1).toBe(1);
-// });
-
 test(
   'test Adapter',
   async () => {
