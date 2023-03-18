@@ -24,6 +24,15 @@ That is all what required for integrating the adapter into casbin.
 
 ## Configuration
 
+You need to create a database named `"casbin"` and a document like this:
+
+```json
+{
+  "_id": "policies",
+  "value": []
+}
+```
+
 ```CouchdbAdapter.newAdapter()``` takes the following parameters as an object to establish the connection with
 couchdb-server
 
