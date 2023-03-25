@@ -20,6 +20,7 @@ jobs:
         with:
           node-version: 16
       - run: npm install
+      - run: make test-coverage
       - run: tsc -t es6 -m es6 --moduleResolution node --experimentalDecorators true --allowSyntheticDefaultImports true ./src/adapter.ts
       - run: curl -X GET http://admin:123456@127.0.0.1:5984
       - run: curl -X PUT http://admin:123456@127.0.0.1:5984/casbin
