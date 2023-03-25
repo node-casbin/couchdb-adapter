@@ -24,7 +24,7 @@ jobs:
       - run: curl -X GET http://admin:123456@127.0.0.1:5984
       - run: curl -X PUT http://admin:123456@127.0.0.1:5984/casbin
       - run: curl -X PUT http://admin:123456@127.0.0.1:5984/casbin/policies -d '{ "_id":"policies", "value":[] }'
-      - run: npm run test
+      - run: npm test
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@master
         with:
