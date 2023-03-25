@@ -3,7 +3,7 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     services:      
       couchdb:
@@ -28,14 +28,13 @@ jobs:
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@v1
         with:
-          github-token: ${{ secrets.github_token }}
+          parallel: true
 
   finish:
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v1
         with:
-          github-token: ${{ secrets.github_token }}
           parallel-finished: true
