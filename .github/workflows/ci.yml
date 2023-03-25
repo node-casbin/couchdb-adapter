@@ -1,0 +1,42 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:      
+      couchdb:
+        image: couchdb
+        ports:
+          - 5984:5984
+        env:
+         COUCHDB_USER: admin
+         COUCHDB_PASSWORD: 123456
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+      - run: npm install
+      - run: tsc -t es6 -m es6 --moduleResolution node --experimentalDecorators true --allowSyntheticDefaultImports true ./src/adapter.ts
+      - run: curl -X GET http://admin:123456@127.0.0.1:5984
+      - run: curl -X PUT http://admin:123456@127.0.0.1:5984/casbin
+      - run: curl -X PUT http://admin:123456@127.0.0.1:5984/casbin/policies -d 
+             '{ "_id": "policies", "value": [] }'
+      - run: npm run test
+      - name: Coveralls Parallel
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+
+  finish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true
