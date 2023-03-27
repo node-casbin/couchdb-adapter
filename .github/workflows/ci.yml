@@ -58,7 +58,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run semantic-release
-        if: github.repository == 'node-casbin/sequelize-adapter' && github.event_name == 'push'
+        if: github.repository == 'node-casbin/couchdb-adapter' && github.event_name == 'push'
         run: |
           yarn install --frozen-lockfile
           curl -X GET http://admin:123456@127.0.0.1:5984
