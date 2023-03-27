@@ -6,10 +6,10 @@
 [![Coverage Status](https://coveralls.io/repos/github/node-casbin/couchdb-adapter/badge.svg?branch=master)](https://coveralls.io/github/node-casbin/couchdb-adapter?branch=master)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/casbin/lobby)
 
-[npm-image]: https://img.shields.io/npm/v/couchdb-adapter.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/couchdb-adapter
-[download-image]: https://img.shields.io/npm/dm/couchdb-adapter.svg?style=flat-square
-[download-url]: https://npmjs.org/package/couchdb-adapter
+[npm-image]: https://img.shields.io/npm/v/casbin-couchdb-adapter.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/casbin-couchdb-adapter
+[download-image]: https://img.shields.io/npm/dm/casbin-couchdb-adapter.svg?style=flat-square
+[download-url]: https://npmjs.org/package/casbin-couchdb-adapter
 
 CouchDB policy storage, implemented as an adapter for [node-casbin](https://github.com/casbin/node-casbin).
 
