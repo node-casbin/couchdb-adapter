@@ -54,29 +54,28 @@ export class CouchdbAdapter implements FilteredAdapter {
   savePolicyLine(ptype: any, rule: any) {
     const line = new Line();
     line.ptype = ptype;
-    switch (rule.length) {
-      case 6:
-        line.v5 = rule[5];
-        break;
-      case 5:
-        line.v4 = rule[4];
-        break;
-      case 4:
-        line.v3 = rule[3];
-        break;
-      case 3:
-        line.v2 = rule[2];
-        break;
-      case 2:
-        line.v1 = rule[1];
-        break;
-      case 1:
-        line.v0 = rule[0];
-        break;
-      default:
-        throw new Error(
-          "Rule should not be empty or have more than 6 arguments."
-        );
+    if (rule.length >= 1) {
+      line.v0 = rule[0];
+    }
+    if (rule.length >= 2) {
+      line.v1 = rule[1];
+    }
+    if (rule.length >= 3) {
+      line.v2 = rule[2];
+    }
+    if (rule.length >= 4) {
+      line.v3 = rule[3];
+    }
+    if (rule.length >= 5) {
+      line.v4 = rule[4];
+    }
+    if (rule.length === 6) {
+      line.v5 = rule[5];
+    }
+    if (rule.length > 6 || rule.length <= 0) {
+      throw new Error(
+        "Rule should not be empty or have more than 6 arguments."
+      );
     }
     return line;
   }
