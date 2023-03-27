@@ -15,13 +15,13 @@ CouchDB policy storage, implemented as an adapter for [node-casbin](https://gith
 
 ## Installation
 
-NPM Install
+NPM:
 
 ```bash
 npm install casbin-couchdb-adapter --save
 ```
 
-Yarn Install
+Yarn:
 
 ```bash
 yarn add casbin-couchdb-adapter
