@@ -5,14 +5,14 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    services:      
+    services:
       couchdb:
         image: couchdb
         ports:
           - 5984:5984
         env:
-         COUCHDB_USER: admin
-         COUCHDB_PASSWORD: 123456
+          COUCHDB_USER: admin
+          COUCHDB_PASSWORD: 123456
 
     steps:
       - uses: actions/checkout@v2
@@ -21,11 +21,18 @@ jobs:
           node-version: 16
       - run: npm install
 
-      - run: tsc -t es6 -m es6 --moduleResolution node --experimentalDecorators true --allowSyntheticDefaultImports true ./src/adapter.ts
-      - run: curl -X GET http://admin:123456@127.0.0.1:5984
-      - run: curl -X PUT http://admin:123456@127.0.0.1:5984/casbin
-      - run: curl -X PUT http://admin:123456@127.0.0.1:5984/casbin/policies -d '{ "_id":"policies", "value":[] }'
-      - run: npm test
+      - name: Compile TypeScript
+        run: tsc -p tsconfig.json
+
+      - name: CouchDB setup
+        run: |
+          curl -X GET http://admin:123456@127.0.0.1:5984
+          curl -X PUT http://admin:123456@127.0.0.1:5984/casbin
+          curl -X PUT http://admin:123456@127.0.0.1:5984/casbin/policies -d '{ "_id":"policies", "value":[] }'
+
+      - name: Run tests
+        run: npm test
+
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@v2
         with:
