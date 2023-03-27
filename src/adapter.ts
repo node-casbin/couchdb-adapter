@@ -20,13 +20,13 @@ export interface Filters {
 }
 
 class Line {
-  ptype: string = "";
-  v0: string = "";
-  v1: string = "";
-  v2: string = "";
-  v3: string = "";
-  v4: string = "";
-  v5: string = "";
+  ptype = "";
+  v0 = "";
+  v1 = "";
+  v2 = "";
+  v3 = "";
+  v4 = "";
+  v5 = "";
 }
 
 export class CouchdbAdapter implements FilteredAdapter {
@@ -35,7 +35,7 @@ export class CouchdbAdapter implements FilteredAdapter {
   private policies: Line[] = [];
   private filtered = false;
 
-  private databaseName: string = "casbin";
+  private databaseName = "casbin";
 
   constructor(databaseUrl: string) {
     const nano = Nano(databaseUrl);
@@ -57,14 +57,19 @@ export class CouchdbAdapter implements FilteredAdapter {
     switch (rule.length) {
       case 6:
         line.v5 = rule[5];
+        break;
       case 5:
         line.v4 = rule[4];
+        break;
       case 4:
         line.v3 = rule[3];
+        break;
       case 3:
         line.v2 = rule[2];
+        break;
       case 2:
         line.v1 = rule[1];
+        break;
       case 1:
         line.v0 = rule[0];
         break;
@@ -95,7 +100,7 @@ export class CouchdbAdapter implements FilteredAdapter {
           reject();
         } else {
           doc.value = policies;
-          this.couchdbInstance.insert(doc, (err: any, res: any) => {
+          this.couchdbInstance.insert(doc, (err: any) => {
             if (err) {
               if (err.statusCode === 409) {
                 // conflict occurred
@@ -110,7 +115,7 @@ export class CouchdbAdapter implements FilteredAdapter {
                     doc2.value = policies;
                     this.couchdbInstance.insert(
                       doc2,
-                      (err3: any, res3: any) => {
+                      (err3: any) => {
                         if (err3) {
                           // handle error
                           console.log(err3);
@@ -147,7 +152,7 @@ export class CouchdbAdapter implements FilteredAdapter {
           reject();
         } else {
           const parsedPolicies = doc.value;
-          let filteredPolicies = parsedPolicies.filter((policy: Line) => {
+          const filteredPolicies = parsedPolicies.filter((policy: Line) => {
             if (!(policy.ptype in policyFilter)) {
               return false;
             }
@@ -204,7 +209,7 @@ export class CouchdbAdapter implements FilteredAdapter {
   public async savePolicy(model: Model): Promise<boolean> {
     const policyRuleAST = model.model.get("p")!;
     const groupingPolicyAST = model.model.get("g")!;
-    let policies: Line[] = [];
+    const policies: Line[] = [];
 
     for (const astMap of [policyRuleAST, groupingPolicyAST]) {
       for (const [ptype, ast] of astMap) {
@@ -222,7 +227,7 @@ export class CouchdbAdapter implements FilteredAdapter {
           reject();
         } else {
           doc.value = policies;
-          this.couchdbInstance.insert(doc, (err: any, res: any) => {
+          this.couchdbInstance.insert(doc, (err: any) => {
             if (err) {
               if (err.statusCode === 409) {
                 // conflict occurred
@@ -237,7 +242,7 @@ export class CouchdbAdapter implements FilteredAdapter {
                     doc2.value = policies;
                     this.couchdbInstance.insert(
                       doc2,
-                      (err3: any, res3: any) => {
+                      (err3: any) => {
                         if (err3) {
                           // handle error
                           console.log(err3);
@@ -307,7 +312,7 @@ export class CouchdbAdapter implements FilteredAdapter {
     fieldIndex: number,
     ...fieldValues: string[]
   ): Promise<void> {
-    let rule = new Array<string>(fieldIndex).fill("");
+    const rule = new Array<string>(fieldIndex).fill("");
     rule.push(...fieldValues);
     const filteredPolicies = this.policies.filter((policy) => {
       let flag = true;
