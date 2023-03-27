@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Helper, Model, FilteredAdapter } from "casbin";
-import * as Nano from "nano";
+import { Helper, Model, FilteredAdapter } from 'casbin';
+import * as Nano from 'nano';
 
 export interface Filters {
   [ptype: string]: string[];
 }
 
 class Line {
-  ptype = "";
-  v0 = "";
-  v1 = "";
-  v2 = "";
-  v3 = "";
-  v4 = "";
-  v5 = "";
+  ptype = '';
+  v0 = '';
+  v1 = '';
+  v2 = '';
+  v3 = '';
+  v4 = '';
+  v5 = '';
 }
 
 export class CouchdbAdapter implements FilteredAdapter {
@@ -35,7 +35,7 @@ export class CouchdbAdapter implements FilteredAdapter {
   private policies: Line[] = [];
   private filtered = false;
 
-  private databaseName = "casbin";
+  private databaseName = 'casbin';
 
   constructor(databaseUrl: string) {
     const nano = Nano(databaseUrl);
@@ -74,7 +74,7 @@ export class CouchdbAdapter implements FilteredAdapter {
     }
     if (rule.length > 6 || rule.length <= 0) {
       throw new Error(
-        "Rule should not be empty or have more than 6 arguments."
+        'Rule should not be empty or have more than 6 arguments.'
       );
     }
     return line;
@@ -83,17 +83,17 @@ export class CouchdbAdapter implements FilteredAdapter {
   loadPolicyLine(line: any, model: any) {
     const lineText =
       line.ptype +
-      ", " +
+      ', ' +
       [line.v0, line.v1, line.v2, line.v3, line.v4, line.v5]
         .filter((n) => n)
-        .join(", ");
+        .join(', ');
 
     Helper.loadPolicyLine(lineText, model);
   }
 
   storePolicies(policies: Line[]): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.couchdbInstance.get("policies", (err: any, doc: any) => {
+      this.couchdbInstance.get('policies', (err: any, doc: any) => {
         if (err) {
           console.log(err);
           reject();
@@ -104,7 +104,7 @@ export class CouchdbAdapter implements FilteredAdapter {
               if (err.statusCode === 409) {
                 // conflict occurred
                 // refetch the document and try again
-                this.couchdbInstance.get("policies", (err2: any, doc2: any) => {
+                this.couchdbInstance.get('policies', (err2: any, doc2: any) => {
                   if (err2) {
                     // handle error
                     console.log(err2);
@@ -112,19 +112,16 @@ export class CouchdbAdapter implements FilteredAdapter {
                   } else {
                     // update document with new revision
                     doc2.value = policies;
-                    this.couchdbInstance.insert(
-                      doc2,
-                      (err3: any) => {
-                        if (err3) {
-                          // handle error
-                          console.log(err3);
-                          reject();
-                        } else {
-                          // handle success
-                          resolve();
-                        }
+                    this.couchdbInstance.insert(doc2, (err3: any) => {
+                      if (err3) {
+                        // handle error
+                        console.log(err3);
+                        reject();
+                      } else {
+                        // handle success
+                        resolve();
                       }
-                    );
+                    });
                   }
                 });
               } else {
@@ -145,7 +142,7 @@ export class CouchdbAdapter implements FilteredAdapter {
     policyFilter: Filters
   ): Promise<void> {
     return await new Promise((resolve, reject) => {
-      this.couchdbInstance.get("policies", (err: any, doc: any) => {
+      this.couchdbInstance.get('policies', (err: any, doc: any) => {
         if (err) {
           console.log(err);
           reject();
@@ -189,9 +186,9 @@ export class CouchdbAdapter implements FilteredAdapter {
   public async loadPolicy(model: Model): Promise<void> {
     return new Promise((resolve, reject) => {
       this.couchdbInstance
-        .get("policies")
+        .get('policies')
         .then((res: { [x: string]: any }) => {
-          const parsedPolicies = res["value"];
+          const parsedPolicies = res['value'];
           this.policies = parsedPolicies;
           parsedPolicies.forEach((policy: any) => {
             this.loadPolicyLine(policy, model);
@@ -206,8 +203,8 @@ export class CouchdbAdapter implements FilteredAdapter {
   }
 
   public async savePolicy(model: Model): Promise<boolean> {
-    const policyRuleAST = model.model.get("p")!;
-    const groupingPolicyAST = model.model.get("g")!;
+    const policyRuleAST = model.model.get('p')!;
+    const groupingPolicyAST = model.model.get('g')!;
     const policies: Line[] = [];
 
     for (const astMap of [policyRuleAST, groupingPolicyAST]) {
@@ -220,7 +217,7 @@ export class CouchdbAdapter implements FilteredAdapter {
     }
 
     return new Promise((resolve, reject) => {
-      this.couchdbInstance.get("policies", (err: any, doc: any) => {
+      this.couchdbInstance.get('policies', (err: any, doc: any) => {
         if (err) {
           console.log(err);
           reject();
@@ -231,7 +228,7 @@ export class CouchdbAdapter implements FilteredAdapter {
               if (err.statusCode === 409) {
                 // conflict occurred
                 // refetch the document and try again
-                this.couchdbInstance.get("policies", (err2: any, doc2: any) => {
+                this.couchdbInstance.get('policies', (err2: any, doc2: any) => {
                   if (err2) {
                     // handle error
                     console.log(err2);
@@ -239,19 +236,16 @@ export class CouchdbAdapter implements FilteredAdapter {
                   } else {
                     // update document with new revision
                     doc2.value = policies;
-                    this.couchdbInstance.insert(
-                      doc2,
-                      (err3: any) => {
-                        if (err3) {
-                          // handle error
-                          console.log(err3);
-                          reject();
-                        } else {
-                          // handle success
-                          resolve(true);
-                        }
+                    this.couchdbInstance.insert(doc2, (err3: any) => {
+                      if (err3) {
+                        // handle error
+                        console.log(err3);
+                        reject();
+                      } else {
+                        // handle success
+                        resolve(true);
                       }
-                    );
+                    });
                   }
                 });
               } else {
@@ -311,7 +305,7 @@ export class CouchdbAdapter implements FilteredAdapter {
     fieldIndex: number,
     ...fieldValues: string[]
   ): Promise<void> {
-    const rule = new Array<string>(fieldIndex).fill("");
+    const rule = new Array<string>(fieldIndex).fill('');
     rule.push(...fieldValues);
     const filteredPolicies = this.policies.filter((policy) => {
       let flag = true;
