@@ -1,10 +1,11 @@
-name: CI
+name: ci
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+
     services:
       couchdb:
         image: couchdb
@@ -18,31 +19,53 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16
-      - run: npm install
-
-      - name: Compile TypeScript
-        run: tsc -p tsconfig.json
-
+          node-version: 18
+      - run: yarn install --frozen-lockfile
       - name: CouchDB setup
         run: |
           curl -X GET http://admin:123456@127.0.0.1:5984
           curl -X PUT http://admin:123456@127.0.0.1:5984/casbin
           curl -X PUT http://admin:123456@127.0.0.1:5984/casbin/policies -d '{ "_id":"policies", "value":[] }'
-
-      - name: Run tests
-        run: npm test
-
+      - run: yarn format:check
+      - run: yarn lint
+      - run: yarn run jest --coverage --forceExit
       - name: Coveralls Parallel
-        uses: coverallsapp/github-action@v2
+        uses: coverallsapp/github-action@master
         with:
-          parallel: true
+          github-token: ${{ secrets.github_token }}
 
   finish:
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
-        uses: coverallsapp/github-action@v2
+        uses: coverallsapp/github-action@master
         with:
+          github-token: ${{ secrets.github_token }}
           parallel-finished: true
+
+  semantic-release:
+    needs: [ finish, build ]
+    runs-on: ubuntu-latest
+    services:
+      couchdb:
+        image: couchdb
+        ports:
+          - 5984:5984
+        env:
+          COUCHDB_USER: admin
+          COUCHDB_PASSWORD: 123456
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run semantic-release
+        if: github.repository == 'node-casbin/sequelize-adapter' && github.event_name == 'push'
+        run: |
+          yarn install --frozen-lockfile
+          curl -X GET http://admin:123456@127.0.0.1:5984
+          curl -X PUT http://admin:123456@127.0.0.1:5984/casbin
+          curl -X PUT http://admin:123456@127.0.0.1:5984/casbin/policies -d '{ "_id":"policies", "value":[] }'
+          yarn run prepack
+          yarn run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
