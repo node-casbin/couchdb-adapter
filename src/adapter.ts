@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Helper, Model, FilteredAdapter } from "casbin";
-import Nano from "nano";
+import * as Nano from "nano";
 
 export interface Filters {
   [ptype: string]: string[];
